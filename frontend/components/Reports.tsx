@@ -10,6 +10,39 @@ interface ReportsProps {
 }
 
 const Reports: React.FC<ReportsProps> = ({ orders, products, config }) => {
+  const now = Date.now();
+  const DAY = 24 * 60 * 60 * 1000;
+
+  const last7Days = orders.filter(o => o.timestamp >= now - 7 * DAY);
+  const prev7Days = orders.filter(o =>
+    o.timestamp < now - 7 * DAY &&
+    o.timestamp >= now - 14 * DAY
+  );
+
+  const lastWeekRevenue = last7Days.reduce((s, o) => s + o.total, 0);
+  const prevWeekRevenue = prev7Days.reduce((s, o) => s + o.total, 0);
+
+  const weeklyChange =
+    prevWeekRevenue === 0
+      ? 0
+      : ((lastWeekRevenue - prevWeekRevenue) / prevWeekRevenue) * 100;
+
+
+  // ---- All-time daily revenue ----
+  const dailyRevenueMap = orders.reduce((acc, o) => {
+    const day = new Date(o.timestamp).toISOString().slice(0, 10); // YYYY-MM-DD
+    acc[day] = (acc[day] || 0) + o.total;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const allTimeTrendData = Object.entries(dailyRevenueMap)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([date, revenue]) => ({
+      date,
+      revenue
+    }));
+
+
   const totalRevenue = orders.reduce((sum, o) => sum + o.total, 0);
   const totalProfit = orders.reduce((sum, o) => sum + o.profit, 0);
   const margin = totalRevenue > 0 ? (totalProfit / totalRevenue) * 100 : 0;
@@ -44,9 +77,17 @@ const Reports: React.FC<ReportsProps> = ({ orders, products, config }) => {
         <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm">
           <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">Total Revenue</p>
           <p className="text-4xl font-black text-slate-900 mt-2">{config.currency}{totalRevenue.toLocaleString()}</p>
-          <div className="mt-4 flex items-center gap-2 text-emerald-600 text-sm font-bold bg-emerald-50 px-3 py-1 rounded-full w-fit">
-            ↑ 8.4% <span className="text-slate-400 font-normal">vs last week</span>
+          <div
+            className={`mt-4 flex items-center gap-2 text-sm font-bold px-3 py-1 rounded-full w-fit
+    ${weeklyChange >= 0
+                ? 'text-emerald-600 bg-emerald-50'
+                : 'text-rose-600 bg-rose-50'}
+  `}
+          >
+            {weeklyChange >= 0 ? '↑' : '↓'} {Math.abs(weeklyChange).toFixed(1)}%
+            <span className="text-slate-400 font-normal">vs last week</span>
           </div>
+
         </div>
         <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm">
           <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">Net Profit</p>
@@ -70,13 +111,13 @@ const Reports: React.FC<ReportsProps> = ({ orders, products, config }) => {
               <AreaChart data={hourlyData}>
                 <defs>
                   <linearGradient id="colorAmount" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.1}/>
-                    <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.1} />
+                    <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                <XAxis dataKey="hour" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 11}} />
-                <YAxis axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 11}} />
+                <XAxis dataKey="hour" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 11 }} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 11 }} />
                 <Tooltip />
                 <Area type="monotone" dataKey="amount" stroke="#6366f1" fillOpacity={1} fill="url(#colorAmount)" strokeWidth={3} />
               </AreaChart>
@@ -117,6 +158,55 @@ const Reports: React.FC<ReportsProps> = ({ orders, products, config }) => {
           </div>
         </div>
       </div>
+
+
+      <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm">
+        <h3 className="text-xl font-bold text-slate-800 mb-8">
+          All-Time Revenue Trend
+        </h3>
+
+        <div className="h-96">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={allTimeTrendData}>
+              <defs>
+                <linearGradient id="allTimeRevenue" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#4f46e5" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+              <XAxis
+                dataKey="date"
+                tick={{ fill: '#94a3b8', fontSize: 11 }}
+                tickFormatter={(v) =>
+                  new Date(v).toLocaleDateString(undefined, {
+                    month: 'short',
+                    day: 'numeric'
+                  })
+                }
+              />
+              <YAxis tick={{ fill: '#94a3b8', fontSize: 11 }} />
+              <Tooltip
+                formatter={(value: number | undefined) =>
+                  value !== undefined ? `${config.currency}${value.toFixed(2)}` : '-'
+                }
+                labelFormatter={(label) =>
+                  new Date(label).toDateString()
+                }
+              />
+              <Area
+                type="monotone"
+                dataKey="revenue"
+                stroke="#4f46e5"
+                strokeWidth={3}
+                fill="url(#allTimeRevenue)"
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
     </div>
   );
 };

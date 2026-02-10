@@ -119,7 +119,7 @@ const POS: React.FC<POSProps> = ({ products, config, onCompleteOrder }) => {
         <div className="p-5 bg-white border-t shrink-0">
           <div className="space-y-1 mb-4">
             <div className="flex justify-between text-[11px] font-bold text-slate-400 uppercase"><span>Subtotal</span><span>{config.currency}{subtotal.toFixed(2)}</span></div>
-            <div className="flex justify-between text-[11px] font-bold text-slate-400 uppercase"><span>GST (5%)</span><span>{config.currency}{tax.toFixed(2)}</span></div>
+            <div className="flex justify-between text-[11px] font-bold text-slate-400 uppercase"><span>GST ({config.taxRate*100}%)</span><span>{config.currency}{tax.toFixed(2)}</span></div>
             <div className="flex justify-between font-black text-xl pt-2 border-t text-slate-900"><span>TOTAL</span><span className="text-indigo-600">{config.currency}{total.toFixed(2)}</span></div>
           </div>
           <div className="grid grid-cols-3 gap-2">

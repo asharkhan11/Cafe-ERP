@@ -52,4 +52,4 @@ export interface StoreConfig {
   taxRate: number;
 }
 
-export type View = 'dashboard' | 'pos' | 'inventory' | 'reports' | 'staff' | 'ai-insights' | 'settings' | 'orders';
+export type View = 'dashboard' | 'pos' | 'inventory' | 'reports' | 'staff' | 'ai-insights' | 'settings' | 'orders' | 'config';

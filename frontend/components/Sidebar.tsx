@@ -17,6 +17,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, setView, isOpen, onClose
     { id: 'inventory' as View, label: 'Inventory', icon: '📦' },
     { id: 'reports' as View, label: 'Analytics', icon: '📈' },
     { id: 'staff' as View, label: 'Team', icon: '👥' },
+    { id: 'config' as View, label: 'Settings', icon: '⚙️' },
     { id: 'ai-insights' as View, label: 'AI Advisor', icon: '✨' },
   ];
 

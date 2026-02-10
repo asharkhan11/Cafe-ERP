@@ -1,23 +1,36 @@
 {
-  "name": "brewpulse-erp",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
+  "name": "cafe-erp",
+  "version": "1.0.0",
+  "author": "Ashar Khan",
+  "description": "Cafe ERP – Offline POS and Inventory System",
+  "main": "electron/main.js",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "react-dom": "^19.2.4",
-    "react": "^19.2.4",
-    "recharts": "^3.7.0",
-    "@google/genai": "^1.40.0"
+    "electron:dev": "electron .",
+    "build:frontend": "cd frontend && npm run build",
+    "build": "npm run build:frontend && electron-builder"
   },
   "devDependencies": {
-    "@types/node": "^22.14.0",
-    "@vitejs/plugin-react": "^5.0.0",
-    "typescript": "~5.8.2",
-    "vite": "^6.2.0"
+    "electron": "^30.0.0",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "asar": true,
+    "appId": "com.cafe.erp",
+    "productName": "CafeERP",
+    "files": [
+      "electron/**/*",
+      "frontend/dist/**/*",
+      "backend/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "backend/erp.db",
+        "to": "erp.db"
+      }
+    ],
+    "win": {
+      "target": "portable"
+    }
   }
 }

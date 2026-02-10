@@ -12,16 +12,17 @@ interface InventoryProps {
 const Inventory: React.FC<InventoryProps> = ({ products, config, onSaveProduct, onDeleteProduct }) => {
   const [search, setSearch] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingProduct, setEditingProduct] = useState<Partial<Product> | null>(null);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const filtered = products.filter(p => 
-    p.name.toLowerCase().includes(search.toLowerCase()) || 
+  const filtered = products.filter(p =>
+    p.name.toLowerCase().includes(search.toLowerCase()) ||
     p.category.toLowerCase().includes(search.toLowerCase())
   );
 
   const handleOpenModal = (product?: Product) => {
     setEditingProduct(product || {
+      id: '',
       name: '',
       price: 0,
       cost: 0,
@@ -85,15 +86,15 @@ const Inventory: React.FC<InventoryProps> = ({ products, config, onSaveProduct, 
         <div className="p-4 lg:p-6 border-b border-slate-100 flex flex-col sm:flex-row gap-4 items-center justify-between">
           <div className="relative w-full sm:w-96">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">🔍</span>
-            <input 
-              type="text" 
-              placeholder="Search Mumbai Brew inventory..." 
+            <input
+              type="text"
+              placeholder="Search Mumbai Brew inventory..."
               className="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-10 pr-4 py-2.5 outline-none focus:ring-2 focus:ring-indigo-500 text-sm font-medium"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
-          <button 
+          <button
             onClick={() => handleOpenModal()}
             className="w-full sm:w-auto bg-slate-900 text-white px-6 py-2.5 rounded-2xl text-sm font-bold shadow-lg shadow-slate-200 hover:bg-indigo-600 transition-all flex items-center justify-center gap-2"
           >
@@ -116,7 +117,7 @@ const Inventory: React.FC<InventoryProps> = ({ products, config, onSaveProduct, 
               {filtered.map(product => {
                 const isLow = product.stock <= product.minStock;
                 const isCritical = product.stock === 0;
-                
+
                 return (
                   <tr key={product.id} className="hover:bg-slate-50/50 transition-colors group cursor-default">
                     <td className="px-6 py-4">
@@ -150,19 +151,19 @@ const Inventory: React.FC<InventoryProps> = ({ products, config, onSaveProduct, 
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button 
+                        <button
                           onClick={(e) => handleQuickStock(e, product.id, product.stock, 10)}
                           className="px-3 py-1.5 bg-emerald-50 text-emerald-600 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-emerald-600 hover:text-white transition-all"
                         >
                           +10 Stock
                         </button>
-                        <button 
+                        <button
                           onClick={() => handleOpenModal(product)}
                           className="p-2 bg-slate-100 text-slate-600 rounded-lg hover:bg-indigo-600 hover:text-white transition-all"
                         >
                           ✏️
                         </button>
-                        <button 
+                        <button
                           onClick={(e) => handleDelete(e, product)}
                           className="p-2 bg-rose-50 text-rose-600 rounded-lg hover:bg-rose-600 hover:text-white transition-all"
                         >
@@ -207,21 +208,21 @@ const Inventory: React.FC<InventoryProps> = ({ products, config, onSaveProduct, 
                   <div className="space-y-4">
                     <div>
                       <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Item Name</label>
-                      <input 
+                      <input
                         required
-                        type="text" 
+                        type="text"
                         className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-sm font-bold outline-none focus:ring-2 focus:ring-indigo-500"
                         value={editingProduct.name}
-                        onChange={e => setEditingProduct({...editingProduct, name: e.target.value})}
+                        onChange={e => setEditingProduct({ ...editingProduct, name: e.target.value })}
                         placeholder="e.g. Cutting Chai"
                       />
                     </div>
                     <div>
                       <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Category</label>
-                      <select 
+                      <select
                         className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-sm font-bold outline-none focus:ring-2 focus:ring-indigo-500 appearance-none cursor-pointer"
                         value={editingProduct.category}
-                        onChange={e => setEditingProduct({...editingProduct, category: e.target.value as Category})}
+                        onChange={e => setEditingProduct({ ...editingProduct, category: e.target.value as Category })}
                       >
                         {Object.values(Category).map(cat => <option key={cat} value={cat}>{cat}</option>)}
                       </select>
@@ -229,24 +230,24 @@ const Inventory: React.FC<InventoryProps> = ({ products, config, onSaveProduct, 
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Retail Price ({config.currency})</label>
-                        <input 
+                        <input
                           required
-                          type="number" 
+                          type="number"
                           step="0.01"
                           className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-sm font-bold outline-none focus:ring-2 focus:ring-indigo-500"
                           value={editingProduct.price}
-                          onChange={e => setEditingProduct({...editingProduct, price: parseFloat(e.target.value) || 0})}
+                          onChange={e => setEditingProduct({ ...editingProduct, price: parseFloat(e.target.value) || 0 })}
                         />
                       </div>
                       <div>
                         <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Unit Cost ({config.currency})</label>
-                        <input 
+                        <input
                           required
-                          type="number" 
+                          type="number"
                           step="0.01"
                           className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-sm font-bold outline-none focus:ring-2 focus:ring-indigo-500"
                           value={editingProduct.cost}
-                          onChange={e => setEditingProduct({...editingProduct, cost: parseFloat(e.target.value) || 0})}
+                          onChange={e => setEditingProduct({ ...editingProduct, cost: parseFloat(e.target.value) || 0 })}
                         />
                       </div>
                     </div>
@@ -257,36 +258,36 @@ const Inventory: React.FC<InventoryProps> = ({ products, config, onSaveProduct, 
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Initial Stock</label>
-                        <input 
+                        <input
                           required
-                          type="number" 
+                          type="number"
                           className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-sm font-bold outline-none focus:ring-2 focus:ring-indigo-500"
                           value={editingProduct.stock}
-                          onChange={e => setEditingProduct({...editingProduct, stock: parseInt(e.target.value) || 0})}
+                          onChange={e => setEditingProduct({ ...editingProduct, stock: parseInt(e.target.value) || 0 })}
                         />
                       </div>
                       <div>
                         <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Alert Threshold</label>
-                        <input 
+                        <input
                           required
-                          type="number" 
+                          type="number"
                           className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-sm font-bold outline-none focus:ring-2 focus:ring-indigo-500"
                           value={editingProduct.minStock}
-                          onChange={e => setEditingProduct({...editingProduct, minStock: parseInt(e.target.value) || 0})}
+                          onChange={e => setEditingProduct({ ...editingProduct, minStock: parseInt(e.target.value) || 0 })}
                         />
                       </div>
                     </div>
                     <div>
                       <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Item Photo</label>
                       <div className="flex gap-4 items-center">
-                        <div 
+                        <div
                           onClick={() => fileInputRef.current?.click()}
                           className="flex-1 bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl px-4 py-6 text-center cursor-pointer hover:border-indigo-500 transition-colors group relative overflow-hidden"
                         >
                           <span className="text-[10px] font-black text-slate-400 group-hover:text-indigo-600 uppercase tracking-widest">Select From Device</span>
-                          <input 
+                          <input
                             ref={fileInputRef}
-                            type="file" 
+                            type="file"
                             accept="image/*"
                             className="hidden"
                             onChange={handleFileChange}
@@ -302,27 +303,27 @@ const Inventory: React.FC<InventoryProps> = ({ products, config, onSaveProduct, 
                       </div>
                     </div>
                     <div className="bg-indigo-50 p-4 rounded-3xl border border-indigo-100">
-                       <p className="text-[10px] font-black text-indigo-700 uppercase tracking-widest mb-1">Projected Margin</p>
-                       <p className="text-xl font-black text-indigo-900">
-                        {editingProduct.price && editingProduct.cost 
+                      <p className="text-[10px] font-black text-indigo-700 uppercase tracking-widest mb-1">Projected Margin</p>
+                      <p className="text-xl font-black text-indigo-900">
+                        {editingProduct.price && editingProduct.cost
                           ? `${(((editingProduct.price - editingProduct.cost) / editingProduct.price) * 100).toFixed(1)}%`
                           : '0.0%'
                         }
-                       </p>
+                      </p>
                     </div>
                   </div>
                 </div>
               </div>
 
               <div className="p-8 bg-slate-50 border-t border-slate-100 flex gap-4">
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   onClick={handleCloseModal}
                   className="flex-1 py-4 px-6 rounded-2xl bg-white border border-slate-200 text-slate-500 font-bold text-sm hover:bg-slate-100 transition-all"
                 >
                   DISCARD
                 </button>
-                <button 
+                <button
                   type="submit"
                   className="flex-1 py-4 px-6 rounded-2xl bg-indigo-600 text-white font-black text-sm shadow-xl shadow-indigo-100 hover:bg-indigo-700 transition-all active:scale-[0.98]"
                 >

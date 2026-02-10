@@ -11,6 +11,7 @@ import Reports from './components/Reports';
 import StaffView from './components/Staff';
 import ReceiptModal from './components/ReceiptModal';
 import OrdersHistory from './components/OrdersHistory';
+import ConfigView from './components/ConfigView';
 
 const App: React.FC = () => {
   const [currentView, setView] = useState<View>('dashboard');
@@ -25,20 +26,28 @@ const App: React.FC = () => {
   const [showReceiptPrompt, setShowReceiptPrompt] = useState(false);
   const [showReceiptModal, setShowReceiptModal] = useState(false);
 
+  const [posSession, setPosSession] = useState(0);
+
+
   useEffect(() => {
     const bootstrap = async () => {
       setIsLoading(true);
-      const [p, o, s, c] = await Promise.all([
-        DataEngine.getProducts(),
-        DataEngine.getOrders(),
-        DataEngine.getStaff(),
-        DataEngine.getConfig()
-      ]);
-      setProducts(p);
-      setOrders(o);
-      setStaff(s);
-      setConfig(c);
-      setIsLoading(false);
+      try {
+        const [p, o, s, c] = await Promise.all([
+          DataEngine.getProducts(),
+          DataEngine.getOrders(),
+          DataEngine.getStaff(),
+          DataEngine.getConfig()
+        ]);
+        setProducts(p);
+        setOrders(o);
+        setStaff(s);
+        setConfig(c);
+      } catch (err) {
+        console.error('Bootstrap error:', err);
+      } finally {
+        setIsLoading(false);
+      }
     };
     bootstrap();
   }, []);
@@ -49,7 +58,7 @@ const App: React.FC = () => {
     const totalCost = items.reduce((sum, i) => sum + i.cost * i.quantity, 0);
     const tax = subtotal * config.taxRate;
     const total = subtotal + tax;
-    
+
     const newOrder: Order = {
       id: Math.random().toString(36).substr(2, 6),
       items,
@@ -67,22 +76,34 @@ const App: React.FC = () => {
     const [up, uo] = await Promise.all([DataEngine.getProducts(), DataEngine.getOrders()]);
     setProducts([...up]);
     setOrders([...uo]);
+
+    // 👇 THIS clears cart
+    setPosSession(s => s + 1);
+
     setLastCompletedOrder(newOrder);
     setShowReceiptPrompt(true);
   };
 
   const handleCancelOrder = async (orderId: string) => {
-    const updatedOrders = await DataEngine.cancelOrder(orderId);
+    await DataEngine.cancelOrder(orderId);
+    const updatedOrders = await DataEngine.getOrders();
     setOrders([...updatedOrders]);
     const updatedProducts = await DataEngine.getProducts();
     setProducts([...updatedProducts]);
   };
 
   const handleSaveProduct = async (product: Product) => {
-    await DataEngine.updateProduct(product);
+    const payload = {
+      ...product,
+      id: product.id || crypto.randomUUID()
+    };
+
+    await DataEngine.updateProduct(payload);
+
     const updatedProducts = await DataEngine.getProducts();
-    setProducts([...updatedProducts]);
+    setProducts(updatedProducts);
   };
+
 
   const handleDeleteProduct = async (productId: string) => {
     await DataEngine.deleteProduct(productId);
@@ -99,17 +120,27 @@ const App: React.FC = () => {
     if (!config) return null;
     switch (currentView) {
       case 'dashboard': return <Dashboard orders={orders} products={products} config={config} onNavigate={setView} />;
-      case 'pos': return <POS products={products} config={config} onCompleteOrder={handleCompleteOrder} />;
+      case 'pos': return <POS key={posSession} products={products} config={config} onCompleteOrder={handleCompleteOrder} />;
       case 'orders': return <OrdersHistory orders={orders} config={config} onViewReceipt={handleViewReceipt} onCancelOrder={handleCancelOrder} />;
-      case 'inventory': return <Inventory 
-        products={products} 
-        config={config} 
+      case 'inventory': return <Inventory
+        products={products}
+        config={config}
         onSaveProduct={handleSaveProduct}
         onDeleteProduct={handleDeleteProduct}
       />;
       case 'reports': return <Reports orders={orders} products={products} config={config} />;
       case 'staff': return <StaffView staff={staff} onToggleClock={async (id) => setStaff(await DataEngine.toggleClock(id))} />;
       case 'ai-insights': return <AIInsights orders={orders} products={products} />;
+      case 'config':
+        return (
+          <ConfigView
+            config={config}
+            onSave={async (updated) => {
+              await DataEngine.saveConfig(updated);
+              setConfig(await DataEngine.getConfig());
+            }}
+          />
+        );
       default: return <Dashboard orders={orders} products={products} config={config} onNavigate={setView} />;
     }
   };
