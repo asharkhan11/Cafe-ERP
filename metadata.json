@@ -1,0 +1,7 @@
+{
+  "name": "BrewPulse ERP",
+  "description": "A comprehensive Cafe Management ERP featuring POS, inventory tracking, analytics dashboard, and AI-driven business insights powered by Gemini.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
