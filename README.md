@@ -1,40 +1,124 @@
-# 🍵 Cafe ERP System
+# ☕ Cafe ERP System
 
-A lightweight ERP solution built for **small to mid-size cafes**, designed to streamline daily operations such as order management, inventory tracking, billing, and reporting.  
-This application is developed using **React** for the frontend and **Express (Node.js)** for the backend — making it fast, scalable, and easy to customize.
+A lightweight ERP platform built for **small to mid-size cafes** to manage daily operations such as orders, inventory, staff, and sales — all in one place.
 
----
+Built using:
 
-## 🚀 Features
-
-### 🧾 Core Functionality
-- **Order Management**
-  - Create, update, and manage dine-in or takeout orders
-  - Add products and customize orders
-- **Inventory Control**
-  - Add/edit inventory items (ingredients, supplies)
-  - Track stock levels in real time
-- **Billing & Invoicing**
-  - Auto-generated bills with tax calculation
-  - Print or export receipts
-- **Daily/Monthly Reports**
-  - Sales analytics
-  - Inventory consumption reports
-  - Performance charts for business insights
-- **User Roles**
-  - Admin dashboard
+- ⚛️ React + TypeScript + Tailwind (Frontend)
+- 🚀 Node.js + Express (Backend)
+- 🔗 REST APIs for communication
 
 ---
 
-## 🛠 Technology Stack
+## 🎯 Key Features
 
-| Part | Technology |
-|------|------------|
-| Frontend | React, HTML, CSS |
-| Backend | Node.js, Express |
-| Database | SQLite |
-| API | RESTful APIs |
+### 🧾 Order Management
+- Create and track customer orders
+- Real-time updates
+
+### 📦 Inventory Control
+- Manage products & stock levels
+- Prevent shortages
+
+### 👨‍🍳 Staff Management
+- Track staff data & roles
+
+### 📊 Sales & Reports
+- View sales summaries
+- Monitor business performance
+
+### ⚙️ Configurable Store Settings
+- Categories
+- Pricing
+- Business rules
 
 ---
+
+## 🏗️ Tech Stack
+
+### Frontend
+- React (TypeScript)
+- Tailwind CSS
+- Vite
+- REST API integration
+
+### Backend
+- Node.js
+- Express.js
+- Modular routes
+- Database connection layer
+
+---
+
 ## 📁 Project Structure
+```
+Cafe-ERP/
+│
+├── backend/
+│ ├── routes/ # API route handlers
+│ ├── db.js # Database connection
+│ ├── server.js # Express app entry
+│ ├── package.json
+│
+├── frontend/
+│ ├── components/ # UI components
+│ ├── services/ # API calls
+│ ├── App.tsx
+│ ├── constants.ts
+│ ├── index.tsx
+│ ├── index.css
+│ ├── tailwind.config.js
+│ ├── package.json
+│
+├── .gitignore
+└── README.md
+```
+---
 
+
+---
+
+## 🚀 Getting Started
+
+### ✅ Prerequisites
+
+- Node.js (v16+ recommended)
+- npm
+
+---
+
+### 🔧 Backend Setup
+
+```bash
+cd backend
+npm install
+npm start
+```
+
+---
+
+### 🎨 Frontend Setup
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+---
+
+### 🤝 Contributing
+
+Pull requests are welcome.
+Feel free to fork and improve features.
+
+---
+### 📜 License
+
+MIT License
+
+---
+### 👨‍💻 Author
+
+Ashar Khan
+
+---
